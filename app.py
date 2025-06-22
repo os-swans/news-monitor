@@ -49,7 +49,7 @@ def get_sheet():
     json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    sheet = client.open(SPREADSHEET_NAME).worksheet(SHEET_NAME)
+    sheet = client.open(News Dashboard).worksheet(Headlines)
     return sheet
 
 def push_to_sheet(rows):
