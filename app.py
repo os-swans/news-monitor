@@ -11,8 +11,8 @@ import json
 # CONFIGURATION
 # -------------------------
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-SPREADSHEET_NAME = "News Dashboard"  # Match your actual Google Sheet name
-SHEET_NAME = "Headlines"
+SPREADSHEET_NAME = "News Dashboard"  # This must exactly match your Google Sheet title
+SHEET_NAME = "Headlines"             # This must match your tab name
 
 RSS_FEEDS = {
     "BBC Africa": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
@@ -22,7 +22,7 @@ RSS_FEEDS = {
     "Al Jazeera": "https://www.aljazeera.com/xml/rss/all.xml",
     "NYT Africa": "https://rss.nytimes.com/services/xml/rss/nyt/Africa.xml",
     "Forbidden Stories": "https://forbiddenstories.org/feed/"
-    # Add more feeds as needed
+    # You can add more AllAfrica or regional feeds here
 }
 
 DEFAULT_QUERY = (
@@ -53,7 +53,7 @@ def parse_boolean_query(query, text):
 # GOOGLE SHEETS SETUP
 # -------------------------
 def get_sheet():
-    json_keyfile = st.secrets["service_account.json"]
+    json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
     sheet = client.open(SPREADSHEET_NAME).worksheet(SHEET_NAME)
@@ -84,7 +84,6 @@ if st.button("🔁 Run Search"):
                 title = entry.get("title", "")
                 summary = entry.get("summary", "")
                 link = entry.get("link", "")
-                published = entry.get("published", "")
                 combined_text = f"{title} {summary}"
                 if parse_boolean_query(query, combined_text):
                     results.append([
