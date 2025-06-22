@@ -26,10 +26,7 @@ RSS_FEEDS = {
 }
 
 DEFAULT_QUERY = (
-    "Russia OR Russians OR Russian OR wagner OR Africa Corps OR Russian instructors "
-    "OR Russian military specialists OR Russie OR Russes OR Russe OR instructeurs russes "
-    "OR groupe Wagner OR Corps africain OR spécialistes militaires russes OR روسيا OR روسيون "
-    "OR روسي OR فاغنر OR فيلق أفريقيا OR مدربون روس OR خبراء عسكريون روس"
+    "conflict" AND "country"
 )
 
 # -------------------------
@@ -55,7 +52,10 @@ def parse_boolean_query(query, text):
 # GOOGLE SHEETS SETUP
 # -------------------------
 def get_sheet():
-    credentials = Credentials.from_service_account_file(JSON_KEYFILE, scopes=SCOPES)
+    import json
+json_keyfile = st.secrets["service_account.json"]
+credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
+
     client = gspread.authorize(credentials)
     sheet = client.open(SPREADSHEET_NAME).worksheet(SHEET_NAME)
     return sheet
