@@ -71,7 +71,7 @@ DEFAULT_QUERY = (
 )
 
 st.set_page_config(page_title="News Monitor Dashboard", layout="wide")
-st.title("🌍 News Monitor Dashboard")
+st.title("🌍 Eyes On World")
 
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
 days_back = st.slider("Show news from the last N days", 1, 30, 7)
@@ -137,7 +137,7 @@ if st.button("🔁 Run Search"):
         ])
         st.dataframe(df.drop(columns=["Thumbnail"]))
 
-        st.markdown("## 🖼️ Visual Storyboard")
+        st.markdown("## Media")
         for _, row in df.iterrows():
             st.markdown(f"### [{row['Title']}]({row['Url']})")
             if row['Thumbnail']:
