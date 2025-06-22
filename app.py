@@ -124,7 +124,7 @@ if st.button("🔁 Run Search"):
         ])
         st.dataframe(df)
 
-        st.markdown("## 🖼️ Visual Storyboard")
+        st.markdown("## Media")
         for _, row in df.iterrows():
             st.markdown(f"### [{row['Title']}]({row['Url']})")
             if row['Thumbnail']:
