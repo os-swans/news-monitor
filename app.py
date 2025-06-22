@@ -1,7 +1,7 @@
 import streamlit as st
 import feedparser
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 import re
 import gspread
@@ -25,14 +25,13 @@ def get_sheet():
     json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    sheet = client.open(SPREADSHEET_NAME)
-    return sheet
+    return client.open(SPREADSHEET_NAME)
 
 def load_feeds_from_sheet():
     sheet = get_sheet()
     feeds_sheet = sheet.worksheet("Feeds")
     rows = feeds_sheet.get_all_values()[1:]  # Skip header
-    return {row[0]: row[1] for row in rows if row[1].startswith("http")}
+    return {row[0]: row[1] for row in rows if len(row) > 1 and row[1].startswith("http")}
 
 # -------------------------
 # BOOLEAN FILTERING
@@ -64,7 +63,7 @@ def push_to_sheet(rows):
         st.error(f"Sheet update failed: {e}")
 
 # -------------------------
-# STREAMLIT UI SETUP
+# STREAMLIT UI
 # -------------------------
 DEFAULT_QUERY = (
     '"Russia" OR "Russians" OR "Russian" OR "wagner" OR "Africa Corps" OR '
@@ -76,9 +75,8 @@ st.title("🌍 News Monitor Dashboard")
 
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
 days_back = st.slider("Show news from the last N days", 1, 30, 7)
-cutoff_time = datetime.utcnow() - pd.Timedelta(days=days_back)
+cutoff_time = datetime.utcnow() - timedelta(days=days_back)
 
-# Load RSS feeds from sheet
 RSS_FEEDS = load_feeds_from_sheet()
 
 # -------------------------
@@ -94,23 +92,26 @@ if st.button("🔁 Run Search"):
                 summary = entry.get("summary", "")
                 link = entry.get("link", "")
                 published_raw = entry.get("published", "")
-                
+
                 try:
                     published_dt = parser.parse(published_raw)
-                except:
-                    published_dt = datetime.utcnow()
+                except Exception:
+                    continue  # Skip entries without valid timestamps
+
+                if published_dt.tzinfo:
+                    published_dt = published_dt.replace(tzinfo=None)
 
                 if published_dt < cutoff_time:
                     continue
 
                 combined_text = f"{title} {summary}"
 
-                # Extract thumbnail if available
+                # Extract thumbnail
                 thumbnail = ""
                 if "media_thumbnail" in entry:
-                    thumbnail = entry.media_thumbnail[0]["url"]
+                    thumbnail = entry.media_thumbnail[0].get("url", "")
                 elif "media_content" in entry:
-                    thumbnail = entry.media_content[0]["url"]
+                    thumbnail = entry.media_content[0].get("url", "")
                 elif "links" in entry:
                     for l in entry.links:
                         if l.get("rel") == "enclosure" and "image" in l.get("type", ""):
