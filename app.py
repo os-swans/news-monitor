@@ -1,34 +1,26 @@
 import streamlit as st
 import feedparser
 import pandas as pd
+from datetime import datetime
 import re
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import datetime
 import json
 
 # -------------------------
-# CONFIGURATION
+# CONFIG
 # -------------------------
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-SPREADSHEET_NAME = "News Dashboard"  # This must exactly match your Google Sheet title
-SHEET_NAME = "Headlines"             # This must match your tab name
+SPREADSHEET_NAME = "News Dashboard"
+SHEET_NAME = "Sheet1"
 
 RSS_FEEDS = {
-    "BBC Africa": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
-    "Reuters Africa": "https://www.reutersagency.com/feed/?best-topics=africa",
-    "Le Monde Afrique": "https://www.lemonde.fr/afrique/rss_full.xml",
-    "France24": "https://www.france24.com/en/africa/rss",
-    "Al Jazeera": "https://www.aljazeera.com/xml/rss/all.xml",
-    "NYT Africa": "https://rss.nytimes.com/services/xml/rss/nyt/Africa.xml",
+    "France24": "https://www.france24.com/en/rss",
     "Forbidden Stories": "https://forbiddenstories.org/feed/"
-    # You can add more AllAfrica or regional feeds here
+    # Add more sources here
 }
 
 DEFAULT_QUERY = (
-    "Russia OR Russians OR Russian OR wagner OR Africa Corps OR Russian instructors OR Russian military specialists "
-    "OR Russie OR Russes OR Russe OR instructeurs russes OR groupe Wagner OR Corps africain OR spécialistes militaires russes "
-    "OR روسيا OR روسيون OR روسي OR فاغنر OR فيلق أفريقيا OR مدربون روس OR خبراء عسكريون روس"
+    '"Russia" OR "Russians" OR "Russian" OR "wagner" OR "Africa Corps" OR "Russian instructors" OR "Russian military specialists"'
 )
 
 # -------------------------
@@ -53,6 +45,7 @@ def parse_boolean_query(query, text):
 # GOOGLE SHEETS SETUP
 # -------------------------
 def get_sheet():
+    SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
     json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
@@ -71,8 +64,8 @@ def push_to_sheet(rows):
 # STREAMLIT UI
 # -------------------------
 st.set_page_config(page_title="News Monitor Dashboard", layout="wide")
-st.title("🌍 News Monitor Dashboard")
 
+st.title("🌍 News Monitor Dashboard")
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
 
 if st.button("🔁 Run Search"):
@@ -84,6 +77,7 @@ if st.button("🔁 Run Search"):
                 title = entry.get("title", "")
                 summary = entry.get("summary", "")
                 link = entry.get("link", "")
+                published = entry.get("published", "")
                 combined_text = f"{title} {summary}"
                 if parse_boolean_query(query, combined_text):
                     results.append([
