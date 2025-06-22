@@ -2,6 +2,7 @@ import streamlit as st
 import feedparser
 import pandas as pd
 from datetime import datetime
+from dateutil import parser
 import re
 import gspread
 from google.oauth2.service_account import Credentials
@@ -74,6 +75,8 @@ st.set_page_config(page_title="News Monitor Dashboard", layout="wide")
 st.title("🌍 News Monitor Dashboard")
 
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
+days_back = st.slider("Show news from the last N days", 1, 30, 7)
+cutoff_time = datetime.utcnow() - pd.Timedelta(days=days_back)
 
 # Load RSS feeds from sheet
 RSS_FEEDS = load_feeds_from_sheet()
@@ -90,7 +93,16 @@ if st.button("🔁 Run Search"):
                 title = entry.get("title", "")
                 summary = entry.get("summary", "")
                 link = entry.get("link", "")
-                published = entry.get("published", "")
+                published_raw = entry.get("published", "")
+                
+                try:
+                    published_dt = parser.parse(published_raw)
+                except:
+                    published_dt = datetime.utcnow()
+
+                if published_dt < cutoff_time:
+                    continue
+
                 combined_text = f"{title} {summary}"
 
                 # Extract thumbnail if available
@@ -107,7 +119,7 @@ if st.button("🔁 Run Search"):
 
                 if parse_boolean_query(query, combined_text):
                     results.append([
-                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        published_dt.strftime("%Y-%m-%d %H:%M:%S"),
                         title,
                         summary,
                         link,
@@ -122,9 +134,9 @@ if st.button("🔁 Run Search"):
             "Timestamp", "Title", "Summary", "Url",
             "Source", "Country", "Matched Keywords", "Thumbnail"
         ])
-        st.dataframe(df)
+        st.dataframe(df.drop(columns=["Thumbnail"]))
 
-        st.markdown("## Media")
+        st.markdown("## 🖼️ Visual Storyboard")
         for _, row in df.iterrows():
             st.markdown(f"### [{row['Title']}]({row['Url']})")
             if row['Thumbnail']:
