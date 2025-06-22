@@ -14,9 +14,86 @@ SPREADSHEET_NAME = "News Dashboard"
 SHEET_NAME = "Headlines"
 
 RSS_FEEDS = {
-    "France24": "https://www.france24.com/en/rss",
-    "Forbidden Stories": "https://forbiddenstories.org/feed/"
-    # Add more sources here
+    # 🌍 Major International Media
+    "BBC Africa": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
+    "Al Jazeera (Global)": "https://www.aljazeera.com/xml/rss/all.xml",
+    "Al Jazeera Africa": "https://www.aljazeera.com/xml/rss/all.xml",  # Filter in-app
+    "Reuters Africa": "https://www.reutersagency.com/feed/?best-topics=africa",
+    "France24 Africa": "https://www.france24.com/en/africa/rss",
+    "Le Monde Afrique": "https://www.lemonde.fr/afrique/rss_full.xml",
+    "NYT Africa": "https://rss.nytimes.com/services/xml/rss/nyt/Africa.xml",
+    "The Guardian (Global Dev)": "https://www.theguardian.com/global-development/rss",
+    "DW Africa": "https://rss.dw.com/rdf/rss-en-all",
+    "VOA News Africa": "https://www.voanews.com/api/zp$ovegu$opi",
+    "RFI Afrique (FR)": "https://www.rfi.fr/fr/afrique/rss",
+    "RFI English": "https://www.rfi.fr/en/rss",
+    "CNN World": "http://rss.cnn.com/rss/edition_world.rss",
+    "AP World": "https://apnews.com/rss/apf-intlnews",
+    "Bloomberg Africa": "https://www.bloomberg.com/feeds/politics.rss",  # Filtered
+    "Forbidden Stories": "https://forbiddenstories.org/feed/",
+    
+    # 🌍 Africa-Wide / Aggregators
+    "AllAfrica Africa Top News": "https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf",
+    "AllAfrica West Africa": "https://allafrica.com/tools/headlines/rdf/westafrica/headlines.rdf",
+    "AllAfrica East Africa": "https://allafrica.com/tools/headlines/rdf/eastafrica/headlines.rdf",
+    "AllAfrica Central Africa": "https://allafrica.com/tools/headlines/rdf/centralafrica/headlines.rdf",
+    "AllAfrica Southern Africa": "https://allafrica.com/tools/headlines/rdf/southernafrica/headlines.rdf",
+    "AllAfrica North Africa": "https://allafrica.com/tools/headlines/rdf/northafrica/headlines.rdf",
+
+    # 🇳🇬 Nigeria
+    "Punch Nigeria": "https://punchng.com/feed/",
+    "The Guardian Nigeria": "https://guardian.ng/feed/",
+    "Vanguard Nigeria": "https://www.vanguardngr.com/feed/",
+    "Daily Trust": "https://dailytrust.com/feed/",
+    "Premium Times": "https://www.premiumtimesng.com/feed",
+
+    # 🇰🇪 Kenya
+    "Daily Nation": "https://nation.africa/kenya/rss",
+    "The Standard (Kenya)": "https://www.standardmedia.co.ke/rss/headlines.php",
+    "Kenya News Agency": "https://www.kenyanews.go.ke/feed/",
+
+    # 🇿🇦 South Africa
+    "News24 South Africa": "https://www.news24.com/rss",
+    "Mail & Guardian": "https://mg.co.za/feed/",
+    "Daily Maverick": "https://www.dailymaverick.co.za/feed/",
+
+    # 🇺🇬 Uganda
+    "Daily Monitor Uganda": "https://www.monitor.co.ug/rss",
+
+    # 🇬🇭 Ghana
+    "GhanaWeb": "https://www.ghanaweb.com/GhanaHomePage/NewsArchive/rss.xml",
+    "Joy Online": "https://www.myjoyonline.com/feed/",
+
+    # 🇸🇩 Sudan
+    "Sudan Tribune": "https://www.sudantribune.com/spip.php?page=backend",
+    
+    # 🇪🇹 Ethiopia
+    "Addis Standard": "https://addisstandard.com/feed/",
+    "The Reporter Ethiopia": "https://www.thereporterethiopia.com/rss.xml",
+
+    # 🇲🇱 Mali
+    "Maliweb": "https://www.maliweb.net/feed",
+
+    # 🇨🇩 DR Congo
+    "Actualite.cd": "https://actualite.cd/rss",
+
+    # 🇪🇬 Egypt
+    "Ahram Online": "https://english.ahram.org.eg/UI/Front/SearchRSS.aspx?Text=&Type=All&DateFrom=&DateTo=",
+
+    # 🇲🇦 Morocco
+    "Morocco World News": "https://www.moroccoworldnews.com/feed",
+
+    # 🇹🇳 Tunisia
+    "Tunisia News (Tap Info)": "https://www.tap.info.tn/en/rss",
+
+    # 🇱🇾 Libya
+    "Libya Observer": "https://www.libyaobserver.ly/rss.xml",
+
+    # 🇸🇳 Senegal
+    "Dakaractu": "https://www.dakaractu.com/xml/atom.xml",
+
+    # 🇨🇮 Côte d’Ivoire
+    "FratMat (CI)": "https://www.fratmat.info/rss.xml"
 }
 
 DEFAULT_QUERY = (
