@@ -52,7 +52,7 @@ def parse_boolean_query(query, text):
         return False
 
 # -------------------------
-# SHEET PUSH
+# PUSH TO SHEET
 # -------------------------
 def push_to_sheet(rows):
     try:
@@ -63,7 +63,7 @@ def push_to_sheet(rows):
         st.error(f"Sheet update failed: {e}")
 
 # -------------------------
-# APP SETUP
+# STREAMLIT UI SETUP
 # -------------------------
 DEFAULT_QUERY = (
     '"Russia" OR "Russians" OR "Russian" OR "wagner" OR "Africa Corps" OR '
@@ -75,7 +75,7 @@ st.title("🌍 News Monitor Dashboard")
 
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
 
-# Load RSS feeds
+# Load RSS feeds from sheet
 RSS_FEEDS = load_feeds_from_sheet()
 
 # -------------------------
@@ -92,6 +92,19 @@ if st.button("🔁 Run Search"):
                 link = entry.get("link", "")
                 published = entry.get("published", "")
                 combined_text = f"{title} {summary}"
+
+                # Extract thumbnail if available
+                thumbnail = ""
+                if "media_thumbnail" in entry:
+                    thumbnail = entry.media_thumbnail[0]["url"]
+                elif "media_content" in entry:
+                    thumbnail = entry.media_content[0]["url"]
+                elif "links" in entry:
+                    for l in entry.links:
+                        if l.get("rel") == "enclosure" and "image" in l.get("type", ""):
+                            thumbnail = l["href"]
+                            break
+
                 if parse_boolean_query(query, combined_text):
                     results.append([
                         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -99,14 +112,27 @@ if st.button("🔁 Run Search"):
                         summary,
                         link,
                         name,
-                        "",  # Country (optional)
-                        query
+                        "",  # Country placeholder
+                        query,
+                        thumbnail
                     ])
 
     if results:
-        df = pd.DataFrame(results, columns=["Timestamp", "Title", "Summary", "Url", "Source", "Country", "Matched Keywords"])
+        df = pd.DataFrame(results, columns=[
+            "Timestamp", "Title", "Summary", "Url",
+            "Source", "Country", "Matched Keywords", "Thumbnail"
+        ])
         st.dataframe(df)
+
+        st.markdown("## 🖼️ Visual Storyboard")
+        for _, row in df.iterrows():
+            st.markdown(f"### [{row['Title']}]({row['Url']})")
+            if row['Thumbnail']:
+                st.image(row['Thumbnail'], width=300)
+            st.caption(f"📰 {row['Source']} • 🕒 {row['Timestamp']}")
+            st.write(row['Summary'])
+            st.markdown("---")
+
         push_to_sheet(results)
     else:
         st.warning("No matching results found.")
-
