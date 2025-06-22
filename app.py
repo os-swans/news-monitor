@@ -11,7 +11,7 @@ import json
 # CONFIG
 # -------------------------
 SPREADSHEET_NAME = "News Dashboard"
-SHEET_NAME = "Sheet1"
+SHEET_NAME = "Headlines"
 
 RSS_FEEDS = {
     "France24": "https://www.france24.com/en/rss",
@@ -49,7 +49,7 @@ def get_sheet():
     json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    sheet = client.open(News Dashboard).worksheet(Headlines)
+    sheet = client.open(SPREADSHEET_NAME).worksheet(SHEET_NAME)
     return sheet
 
 def push_to_sheet(rows):
