@@ -17,10 +17,10 @@ SHEET_NAME = "Headlines"
 # GOOGLE SHEETS FUNCTIONS
 # -------------------------
 def get_sheet():
-   SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
+    SCOPES = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
     json_keyfile = st.secrets["service_account_json"]
     credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
