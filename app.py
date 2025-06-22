@@ -5,14 +5,14 @@ import re
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
+import json
 
 # -------------------------
 # CONFIGURATION
 # -------------------------
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-SPREADSHEET_NAME = "News Monitor Dashboard"
+SPREADSHEET_NAME = "News Dashboard"  # Match your actual Google Sheet name
 SHEET_NAME = "Headlines"
-JSON_KEYFILE = "service_account.json"  # Upload this as a secret or file
 
 RSS_FEEDS = {
     "BBC Africa": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
@@ -21,12 +21,14 @@ RSS_FEEDS = {
     "France24": "https://www.france24.com/en/africa/rss",
     "Al Jazeera": "https://www.aljazeera.com/xml/rss/all.xml",
     "NYT Africa": "https://rss.nytimes.com/services/xml/rss/nyt/Africa.xml",
-    "Forbidden Stories": "https://forbiddenstories.org/feed/",
-    # Add your AllAfrica country feeds here too
+    "Forbidden Stories": "https://forbiddenstories.org/feed/"
+    # Add more feeds as needed
 }
 
 DEFAULT_QUERY = (
-    "conflict" AND "country"
+    "Russia OR Russians OR Russian OR wagner OR Africa Corps OR Russian instructors OR Russian military specialists "
+    "OR Russie OR Russes OR Russe OR instructeurs russes OR groupe Wagner OR Corps africain OR spécialistes militaires russes "
+    "OR روسيا OR روسيون OR روسي OR فاغنر OR فيلق أفريقيا OR مدربون روس OR خبراء عسكريون روس"
 )
 
 # -------------------------
@@ -36,7 +38,6 @@ def parse_boolean_query(query, text):
     try:
         text = text.lower()
         query = query.lower()
-        # Split phrases into words
         terms = re.split(r"\s+(AND|OR|NOT)\s+", query)
         expression = ""
         for t in terms:
@@ -52,10 +53,8 @@ def parse_boolean_query(query, text):
 # GOOGLE SHEETS SETUP
 # -------------------------
 def get_sheet():
-    import json
-json_keyfile = st.secrets["service_account.json"]
-credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
-
+    json_keyfile = st.secrets["service_account.json"]
+    credentials = Credentials.from_service_account_info(json.loads(json_keyfile), scopes=SCOPES)
     client = gspread.authorize(credentials)
     sheet = client.open(SPREADSHEET_NAME).worksheet(SHEET_NAME)
     return sheet
@@ -72,8 +71,8 @@ def push_to_sheet(rows):
 # STREAMLIT UI
 # -------------------------
 st.set_page_config(page_title="News Monitor Dashboard", layout="wide")
-
 st.title("🌍 News Monitor Dashboard")
+
 query = st.text_area("Boolean Query", value=DEFAULT_QUERY, height=100)
 
 if st.button("🔁 Run Search"):
@@ -94,7 +93,7 @@ if st.button("🔁 Run Search"):
                         summary,
                         link,
                         name,
-                        "",  # Country is optional
+                        "",  # Country placeholder
                         query
                     ])
 
